@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/goravel/framework/contracts/http"
 	"github.com/goravel/framework/http/middleware"
+	httpmiddleware "goravel/app/http/middleware"
 )
 
 type Kernel struct {
@@ -13,5 +14,6 @@ type Kernel struct {
 func (kernel *Kernel) Middleware() []http.Middleware {
 	return []http.Middleware{
 		middleware.Cors(),
+		httpmiddleware.AuthMiddleware(),
 	}
 }

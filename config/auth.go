@@ -29,7 +29,8 @@ func init() {
 		// Supported: "jwt"
 		"guards": map[string]interface{}{
 			"user": map[string]interface{}{
-				"driver": "jwt",
+				"driver":   "jwt",
+				"provider": "AdminUser",
 			},
 		},
 	})
