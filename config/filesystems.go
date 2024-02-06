@@ -2,10 +2,11 @@ package config
 
 import (
 	"github.com/goravel/framework/facades"
+	"github.com/goravel/framework/support/path"
 )
 
 func init() {
-	config := facades.Config
+	config := facades.Config()
 	config.Add("filesystems", map[string]any{
 		// Default Filesystem Disk
 		//
@@ -20,35 +21,16 @@ func init() {
 		// may even configure multiple disks of the same driver. Defaults have
 		// been set up for each driver as an example of the required values.
 		//
-		// Supported Drivers: "local", "s3", "oss", "cos", "custom"
+		// Supported Drivers: "local", "s3", "oss", "cos", "minio", "custom"
 		"disks": map[string]any{
 			"local": map[string]any{
 				"driver": "local",
-				"root":   "storage/app",
-				"url":    config.Env("APP_URL").(string) + "/storage",
+				"root":   path.Storage("app"),
 			},
-			"s3": map[string]any{
-				"driver": "s3",
-				"key":    config.Env("AWS_ACCESS_KEY_ID"),
-				"secret": config.Env("AWS_ACCESS_KEY_SECRET"),
-				"region": config.Env("AWS_DEFAULT_REGION"),
-				"bucket": config.Env("AWS_BUCKET"),
-				"url":    config.Env("AWS_URL"),
-			},
-			"oss": map[string]any{
-				"driver":   "oss",
-				"key":      config.Env("ALIYUN_ACCESS_KEY_ID"),
-				"secret":   config.Env("ALIYUN_ACCESS_KEY_SECRET"),
-				"bucket":   config.Env("ALIYUN_BUCKET"),
-				"url":      config.Env("ALIYUN_URL"),
-				"endpoint": config.Env("ALIYUN_ENDPOINT"),
-			},
-			"cos": map[string]any{
-				"driver": "cos",
-				"key":    config.Env("TENCENT_ACCESS_KEY_ID"),
-				"secret": config.Env("TENCENT_ACCESS_KEY_SECRET"),
-				"bucket": config.Env("TENCENT_BUCKET"),
-				"url":    config.Env("TENCENT_URL"),
+			"public": map[string]any{
+				"driver": "local",
+				"root":   path.Storage("app/public"),
+				"url":    config.Env("APP_URL", "").(string) + "/storage",
 			},
 		},
 	})

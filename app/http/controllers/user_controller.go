@@ -20,7 +20,13 @@ func NewUserController() *UserController {
 	}
 }
 
-func (r *UserController) Show(ctx http.Context) {
+//func (r *UserController) Show(ctx http.Context) http.Response {
+//	return ctx.Response().Success().Json(http.Json{
+//		"Hello": "Goravel",
+//	})
+//}
+
+func (r *UserController) Show(ctx http.Context) http.Response {
 	var users []models.AdminUser
 	err := facades.Orm.Query().Select("Id", "Name", "Username", "Balance", "Avatars").Get(&users)
 
@@ -34,7 +40,7 @@ func (r *UserController) Show(ctx http.Context) {
 	}
 }
 
-func (r *UserController) Add(ctx http.Context) {
+func (r *UserController) Add(ctx http.Context) http.Response {
 	name := ctx.Request().Form("name", "goravel")
 	username := ctx.Request().Form("username", "goravel")
 	user := models.AdminUser{Name: name, Username: username, Password: ""}
@@ -42,7 +48,7 @@ func (r *UserController) Add(ctx http.Context) {
 	ctx.Response().Success().Json(http.Json{"result": result})
 }
 
-func (r *UserController) DeleteUser(ctx http.Context) {
+func (r *UserController) DeleteUser(ctx http.Context) http.Response {
 	var user models.AdminUser
 	id := ctx.Request().Form("id", "0")
 	facades.Orm.Query().Delete(&user, id)
@@ -51,7 +57,7 @@ func (r *UserController) DeleteUser(ctx http.Context) {
 
 }
 
-func (r *UserController) Login(ctx http.Context) {
+func (r *UserController) Login(ctx http.Context )http.Response {
 	var user models.AdminUser
 	facades.Orm.Query().Find(&user, 1)
 
@@ -67,7 +73,7 @@ func (r *UserController) Login(ctx http.Context) {
 	}
 }
 
-func (r *UserController) UserInfo(ctx http.Context) {
+func (r *UserController) UserInfo(ctx http.Context)http.Response {
 	var user models.AdminUser
 	//token := ctx.Request().Form("token", "")
 	//if token != "" {
