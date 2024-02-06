@@ -10,7 +10,7 @@ import (
 func AuthMiddleware() http.Middleware {
 	return func(ctx http.Context) {
 		token := ctx.Request().Header("Authorization", "")
-		err := facades.Auth.Guard("user").Parse(ctx, token)
+		err := facades.Auth().Guard("user").Parse(ctx, token)
 		tokenExpired := errors.Is(err, auth.ErrorTokenExpired)
 		if tokenExpired {
 			errors.New("token expired")

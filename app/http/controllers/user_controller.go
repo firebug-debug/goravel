@@ -28,65 +28,67 @@ func NewUserController() *UserController {
 
 func (r *UserController) Show(ctx http.Context) http.Response {
 	var users []models.AdminUser
-	err := facades.Orm.Query().Select("Id", "Name", "Username", "Balance", "Avatars").Get(&users)
+	err := facades.Orm().Query().Select("Id", "Name", "Username", "Balance", "Avatars").Get(&users)
 
 	if err != nil {
-		ctx.Response().Success().Json(err)
+		return ctx.Response().Success().Json(err)
 	} else {
 		for _, user := range users {
 			fmt.Printf("user.name:%s", user.Name)
 		}
-		ctx.Response().Success().Json(users)
+		return ctx.Response().Success().Json(users)
 	}
 }
 
 func (r *UserController) Add(ctx http.Context) http.Response {
-	name := ctx.Request().Form("name", "goravel")
-	username := ctx.Request().Form("username", "goravel")
+	name := ctx.Request().Input("name", "goravel")
+	username := ctx.Request().Input("username", "goravel")
 	user := models.AdminUser{Name: name, Username: username, Password: ""}
-	result := facades.Orm.Query().Create(&user)
-	ctx.Response().Success().Json(http.Json{"result": result})
+	result := facades.Orm().Query().Create(&user)
+	return ctx.Response().Success().Json(http.Json{"result": result})
 }
 
 func (r *UserController) DeleteUser(ctx http.Context) http.Response {
 	var user models.AdminUser
-	id := ctx.Request().Form("id", "0")
-	facades.Orm.Query().Delete(&user, id)
+	id := ctx.Request().Input("id", "0")
+	facades.Orm().Query().Delete(&user, id)
 
-	ctx.Response().Success().Json(http.Json{"result": "success"})
+	return ctx.Response().Success().Json(http.Json{"result": "success"})
 
 }
 
-func (r *UserController) Login(ctx http.Context )http.Response {
+func (r *UserController) Login(ctx http.Context) http.Response {
 	var user models.AdminUser
-	facades.Orm.Query().Find(&user, 1)
-
-	token, err := facades.Auth.Guard("user").LoginUsingID(ctx, 1)
+	err := facades.Orm().Query().Find(&user, 1)
 	if err != nil {
-		ctx.Response().Success().Json(err)
+		return ctx.Response().Success().Json(err)
+	}
+	token, err2 := facades.Auth().Guard("user").LoginUsingID(ctx, 1)
+	if err2 != nil {
+		return ctx.Response().Success().Json(err2)
 	} else {
-		err1 := facades.Auth.Guard("user").Parse(ctx, token)
-		ctx.Response().Success().Json(http.Json{
+		_, err1 := facades.Auth().Guard("user").Parse(ctx, token)
+		return ctx.Response().Success().Json(http.Json{
 			"token": token,
 			"err1":  err1,
 		})
 	}
 }
 
-func (r *UserController) UserInfo(ctx http.Context)http.Response {
+func (r *UserController) UserInfo(ctx http.Context) http.Response {
 	var user models.AdminUser
-	//token := ctx.Request().Form("token", "")
+	//token := ctx.Request().Input("token", "")
 	//if token != "" {
 	//
 	//}
-	//err := facades.Auth.Parse(ctx, token)
+	//err := facades.Auth().Parse(ctx, token)
 	//token := ctx.Request().Header("Authorization", "")
-	//facades.Auth.Guard("user").Parse(ctx, token)
-	err := facades.Auth.Guard("user").User(ctx, &user)
+	//facades.Auth().Guard("user").Parse(ctx, token)
+	err := facades.Auth().Guard("user").User(ctx, &user)
 	booll := errors.Is(err, auth.ErrorTokenExpired)
 	bool1 := errors.Is(err, auth.ErrorInvalidKey)
 	bool2 := errors.Is(err, auth.ErrorParseTokenFirst)
-	ctx.Response().Success().Json(http.Json{
+	return ctx.Response().Success().Json(http.Json{
 		"user":  user,
 		"err":   err,
 		"booll": booll,
