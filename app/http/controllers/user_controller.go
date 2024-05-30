@@ -51,7 +51,9 @@ func (r *UserController) Add(ctx http.Context) http.Response {
 func (r *UserController) DeleteUser(ctx http.Context) http.Response {
 	var user models.AdminUser
 	id := ctx.Request().Input("id", "0")
-	facades.Orm().Query().Delete(&user, id)
+	if _, err := facades.Orm().Query().Delete(&user, id); err != nil {
+		return ctx.Response().Success().Json(http.Json{"result": "err"})
+	}
 
 	return ctx.Response().Success().Json(http.Json{"result": "success"})
 
